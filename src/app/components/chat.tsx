@@ -9,9 +9,15 @@ interface Message {
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [sender] = useState<string>(`User${Math.floor(Math.random() * 1000)}`);
+  const [sender, setSender] = useState<string>('');
 
   useEffect(() => {
+    setSender(`User${Math.floor(Math.random() * 1000)}`);
+  }, []);
+
+  useEffect(() => {
+    if (!sender) return;
+
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
     });
@@ -25,7 +31,7 @@ const Chat = () => {
       channel.unbind_all();
       channel.unsubscribe();
     };
-  }, []);
+  }, [sender]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
