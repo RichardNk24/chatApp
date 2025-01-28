@@ -1,18 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import Pusher from 'pusher-js';
 
+interface Message {
+  message: string;
+  sender: string;
+}
+
 const Chat = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [sender, setSender] = useState('User' + Math.floor(Math.random() * 1000));
+  const [sender] = useState<string>(`User${Math.floor(Math.random() * 1000)}`);
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
     });
 
     const channel = pusher.subscribe('chat-channel');
-    channel.bind('message-event', (data) => {
+    channel.bind('message-event', (data: Message) => {
       setMessages(prev => [...prev, data]);
     });
 
@@ -22,13 +27,16 @@ const Chat = () => {
     };
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!newMessage.trim()) return;
+
     await fetch('/api/pusher', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: newMessage, sender })
     });
+    
     setNewMessage('');
   };
 
@@ -36,8 +44,15 @@ const Chat = () => {
     <div className="max-w-md mx-auto p-4 bg-gray-100 rounded-lg">
       <div className="mb-4 h-64 overflow-y-auto">
         {messages.map((msg, i) => (
-          <div key={i} className={`mb-2 ${msg.sender === sender ? 'text-right' : ''}`}>
-            <span className={`inline-block p-2 rounded-lg ${msg.sender === sender ? 'bg-blue-500 text-white' : 'bg-white'}`}>
+          <div 
+            key={i} 
+            className={`mb-2 ${msg.sender === sender ? 'text-right' : ''}`}
+          >
+            <span className={`inline-block p-2 rounded-lg ${
+              msg.sender === sender 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-white'
+            }`}>
               {msg.message}
             </span>
             <p className="text-xs text-gray-500 mt-1">{msg.sender}</p>
