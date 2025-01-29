@@ -1,10 +1,11 @@
 import { useState, useEffect, FormEvent } from 'react';
 import Pusher from 'pusher-js';
+import { nanoid } from 'nanoid';
 
 interface Message {
   message: string;
   sender: string;
-}
+} 
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -12,7 +13,7 @@ const Chat = () => {
   const [sender, setSender] = useState<string>('');
 
   useEffect(() => {
-    setSender(`User${Math.floor(Math.random() * 1000)}`);
+    setSender(`User${nanoid(4)}`);
   }, []);
 
   useEffect(() => {
