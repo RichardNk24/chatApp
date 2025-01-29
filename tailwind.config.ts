@@ -9,6 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        'deep-purple': {
+          500: '#673AB7',
+          600: '#5E35B1',
+          700: '#512DA8',
+        },
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
