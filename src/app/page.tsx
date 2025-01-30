@@ -1,6 +1,6 @@
-import AuthForm from "./components/AuthForm";
+'use client';
+import Welcome from './components/welcome'
+
 export default function Home() {
-  return (
-    <AuthForm />
-  );
+  return <Welcome />;
 }
